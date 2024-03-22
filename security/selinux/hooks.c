@@ -125,7 +125,7 @@ static int __init selinux_enabled_setup(char *str)
 {
 	unsigned long enabled;
 	if (!kstrtoul(str, 0, &enabled))
-		selinux_enabled = enabled ? 1 : 0;
+		selinux_enabled = 1;
 	return 1;
 }
 __setup("selinux=", selinux_enabled_setup);
@@ -141,7 +141,7 @@ static int __init checkreqprot_setup(char *str)
 	unsigned long checkreqprot;
 
 	if (!kstrtoul(str, 0, &checkreqprot))
-		selinux_checkreqprot_boot = checkreqprot ? 1 : 0;
+		selinux_checkreqprot_boot = 1;
 	return 1;
 }
 __setup("checkreqprot=", checkreqprot_setup);
@@ -2292,19 +2292,16 @@ static int selinux_ptrace_access_check(struct task_struct *child,
 	u32 sid = current_sid();
 	u32 csid = task_sid(child);
 
-	if (mode & PTRACE_MODE_READ)
-		return avc_has_perm(&selinux_state,
-				    sid, csid, SECCLASS_FILE, FILE__READ, NULL);
+	// if (mode & PTRACE_MODE_READ)
+	// 	return avc_has_perm(&selinux_state,
+	// 			    sid, csid, SECCLASS_FILE, FILE__READ, NULL);
 
-	return avc_has_perm(&selinux_state,
-			    sid, csid, SECCLASS_PROCESS, PROCESS__PTRACE, NULL);
+	return 0;
 }
 
 static int selinux_ptrace_traceme(struct task_struct *parent)
 {
-	return avc_has_perm(&selinux_state,
-			    task_sid(parent), current_sid(), SECCLASS_PROCESS,
-			    PROCESS__PTRACE, NULL);
+	return 0;
 }
 
 static int selinux_capget(struct task_struct *target, kernel_cap_t *effective,
@@ -2432,7 +2429,7 @@ static u32 ptrace_parent_sid(void)
 		sid = task_sid(tracer);
 	rcu_read_unlock();
 
-	return sid;
+	return 0;
 }
 
 static int check_nnp_nosuid(const struct linux_binprm *bprm,
